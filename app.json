@@ -2,6 +2,7 @@
   "expo": {
     "name": "circlaris-mobile",
     "slug": "circlaris-mobile",
+    "scheme": "circlaris",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +25,12 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image"
+    ]
   }
 }
