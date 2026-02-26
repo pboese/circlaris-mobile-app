@@ -1,0 +1,30 @@
+
+╭─── Claude Code v2.1.59 ──────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                 Welcome back Pelle!                │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ Recent activity         │
+│                        ▘▘ ▝▝                       │ No recent activity      │
+│                                                    │                         │
+│   Sonnet 4.6 · Claude Pro · boese@forthewin.de's   │                         │
+│   Organization                                     │                         │
+│            ~/Sites/circlaris/mobile-app            │                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact 
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Read app/dashboard.tsx (495 lines)
+  ⎿  Read app.json (37 lines)
+  ⎿  Read package.json (36 lines)
+  ⎿  Skills restored (react-native-expo)
+
+❯ i cant select today in the range picker 
+  ⎿  You're out of extra usage · resets 1am (Europe/Berlin)
+     /upgrade or /extra-usage to finish what you’re working on.
+
+❯ /rate-limit-options 
+  ⎿  Login successful

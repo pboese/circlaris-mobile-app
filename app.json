@@ -30,7 +30,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-image"
+      "@react-native-community/datetimepicker"
     ]
   }
 }
