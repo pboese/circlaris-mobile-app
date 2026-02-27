@@ -41,11 +41,24 @@ circlaris-mobile-app/
 │   ├── android-icon-foreground.png
 │   ├── android-icon-background.png
 │   └── android-icon-monochrome.png
+├── __tests__/                  # Jest test files (mirrors source structure)
+│   ├── context/auth.test.tsx
+│   └── app/
+│       ├── index.test.tsx
+│       └── dashboard.test.tsx
+├── __mocks__/
+│   └── svgMock.tsx             # SVG mock for Jest (returns a plain <View>)
 ├── app.json                    # Expo app configuration (name, slug, icons, scheme)
-├── package.json                # Dependencies and npm scripts
+├── eas.json                    # EAS Build profiles (development / preview / production)
+├── package.json                # Dependencies, npm scripts, Jest config
 ├── tsconfig.json               # TypeScript config (strict, @/* path alias)
 ├── metro.config.js             # Metro bundler — SVG transformer configured here
-├── declarations.d.ts           # Module declaration for *.svg imports as React components
+├── declarations.d.ts           # Module declaration for *.svg and ProcessEnv types
+├── .env                        # Local env vars (gitignored)
+├── .env.example                # Env var template (committed)
+├── .eslintrc.js                # ESLint config (expo + prettier)
+├── .prettierrc                 # Prettier config
+├── .prettierignore             # Prettier ignore rules
 └── .gitignore
 ```
 
@@ -58,12 +71,21 @@ circlaris-mobile-app/
 npm start
 
 # Open directly on a platform
-npm run android   # Android emulator or connected device
-npm run ios       # iOS simulator (macOS only)
-npm run web       # Browser (Metro web bundler)
-```
+npm run android       # Android emulator or connected device
+npm run ios           # iOS simulator (macOS only)
+npm run web           # Browser (Metro web bundler)
 
-There is **no test runner** and **no linter** configured. If adding them, prefer Jest + `@testing-library/react-native` for tests and ESLint with the Expo config for linting.
+# Testing
+npm test              # Run all tests once (CI mode)
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+
+# Linting & formatting
+npm run lint          # Check for ESLint errors
+npm run lint:fix      # Auto-fix ESLint errors
+npm run format        # Format all files with Prettier
+npm run format:check  # Check formatting without writing
+```
 
 ---
 
@@ -122,9 +144,25 @@ Auth data is persisted via `expo-secure-store` using two keys:
 
 ---
 
+## Environment Variables
+
+Variables are defined in `.env` (local, gitignored) and must be prefixed with `EXPO_PUBLIC_` to be inlined at build time. See `.env.example` for the full list.
+
+| Variable | Description |
+|---|---|
+| `EXPO_PUBLIC_API_BASE_URL` | Base URL for all API calls (no trailing slash) |
+
+**In code:** access via `process.env.EXPO_PUBLIC_API_BASE_URL` — no import needed.
+
+**In tests:** module-level constants that read `process.env` are evaluated at import time, so setting `process.env.EXPO_PUBLIC_*` in `beforeEach` won't affect already-imported constants. Use path-pattern assertions (`.toMatch(/\/login$/)`) instead of asserting the full URL.
+
+**For EAS Build:** env vars are declared per-profile in `eas.json`. For sensitive values use `eas secret:create` instead of committing them to `eas.json`.
+
+---
+
 ## API
 
-**Base URL:** `https://im.dev.marginscale.com/mobile-api/`
+**Base URL:** configured via `EXPO_PUBLIC_API_BASE_URL` (see `.env.example`)
 
 ### POST `/mobile-api/login`
 
@@ -265,13 +303,107 @@ Do not import SVGs via `Image` — use them as JSX components.
 
 ---
 
-## What Does Not Exist Yet
+## Testing
 
-The following are not configured and may be added as the project grows:
+Tests use **Jest 29** + **jest-expo** + **@testing-library/react-native**.
 
-- **Tests** — no Jest or testing library setup
-- **Linting** — no ESLint configuration
-- **Formatting** — no Prettier configuration
-- **Environment variables** — no `.env` file; the API base URL is hardcoded in source files (`app/index.tsx` and `app/dashboard.tsx`)
-- **EAS Build config** — no `eas.json`
+### Structure
+
+```
+__tests__/
+  context/
+    auth.test.tsx      # AuthProvider + useAuth unit tests
+  app/
+    index.test.tsx     # Login screen interaction tests
+    dashboard.test.tsx # Dashboard screen rendering + fetch tests
+__mocks__/
+  svgMock.tsx          # Renders SVG imports as a plain <View> in tests
+```
+
+### Running tests
+
+```bash
+npm test              # Single run
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage
+```
+
+### Jest config (in `package.json`)
+
+- **Preset:** `jest-expo` (must match the installed Expo SDK major version — currently SDK 54 / `jest-expo@54`)
+- **SVG mock:** `moduleNameMapper` maps `*.svg` → `__mocks__/svgMock.tsx`
+- **transformIgnorePatterns:** extended to include `react-native-calendars` and `react-native-svg`
+- **Coverage sources:** `app/**` and `context/**`
+
+### Mocking conventions
+
+| What | How |
+|---|---|
+| `expo-secure-store` | `jest.mock('expo-secure-store')` — auto-mocked |
+| `expo-router` | `jest.mock('expo-router', () => ({ useRouter: ..., useSegments: ... }))` |
+| `context/auth` | `jest.mock('../../context/auth', () => ({ useAuth: () => mockValue }))` |
+| `react-native-calendars` | `jest.mock('react-native-calendars', () => ({ Calendar: () => null }))` |
+| SVG assets | Handled globally via `moduleNameMapper` in jest config |
+| `fetch` | `global.fetch = jest.fn()` in `beforeEach` |
+
+### Known test behaviour
+
+- `console.error` warnings about `act()` appear for async state updates (Promises in `useEffect`). These are warnings only — they do not fail tests. `waitFor` from `@testing-library/react-native` handles the assertions correctly.
+- `EXPO_PUBLIC_*` env vars are evaluated at module import time, not in `beforeEach`. Assert URL paths with regex (`.toMatch(/\/login$/)`) rather than the full constructed URL.
+
+---
+
+## Linting & Formatting
+
+| Tool | Config file | Command |
+|---|---|---|
+| ESLint | `.eslintrc.js` | `npm run lint` / `npm run lint:fix` |
+| Prettier | `.prettierrc` | `npm run format` / `npm run format:check` |
+
+**ESLint extends:** `expo` (TypeScript + React + React Native + Hooks rules) + `prettier` (disables conflicting rules).
+
+**Prettier settings:** single quotes, 2-space indent, 100-char print width, trailing commas, semicolons.
+
+---
+
+## EAS Build
+
+`eas.json` defines three build profiles:
+
+| Profile | Distribution | Use case |
+|---|---|---|
+| `development` | Internal (ad-hoc) | Local testing with Expo Dev Client |
+| `preview` | Internal (ad-hoc) | Staging / QA builds |
+| `production` | Store | App Store / Play Store submission |
+
+### First-time EAS setup
+
+```bash
+npm install -g eas-cli
+eas login
+eas build:configure   # Links to your EAS project, writes projectId to app.json
+```
+
+### Triggering builds
+
+```bash
+eas build --platform ios --profile preview
+eas build --platform android --profile production
+eas build --platform all --profile development
+```
+
+### Environment variables in EAS
+
+Non-sensitive values are set per-profile in `eas.json`. For secrets:
+
+```bash
+eas secret:create --scope project --name MY_SECRET --value "..."
+```
+
+---
+
+## What Still Needs Work
+
 - **Multiple screens / tabs** — app currently has exactly two screens
+- **EAS project linking** — run `eas build:configure` to write `projectId` into `app.json` (requires an Expo account)
+- **CI/CD** — no GitHub Actions or other pipeline configured yet
