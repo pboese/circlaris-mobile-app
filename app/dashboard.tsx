@@ -274,9 +274,6 @@ export default function DashboardScreen() {
             {customer?.user ? (
               <Text style={styles.greeting}>Hello, {customer.user}</Text>
             ) : null}
-            {customer?.name ? (
-              <Text style={styles.customerName}>{customer.name}</Text>
-            ) : null}
 
             {/* Date range selector */}
             <Pressable
@@ -290,12 +287,6 @@ export default function DashboardScreen() {
             </Pressable>
 
             <View style={styles.cards}>
-              <FigureCard title="Netto Umsatz" value={figures.netSales} />
-              <FigureCard title="Rohertrag" value={figures.profit} />
-              <FigureCard title="Rohertragsmarge" value={figures.profitMargin} format="percent" />
-              <FigureCard title="Angekaufwert Artikel" value={figures.purchaseTotalArticles} />
-              <FigureCard title="Ø Verkaufspreis Artikel" value={figures.averageSellingPriceArticles} />
-              <FigureCard title="Servicekosten" value={figures.serviceCost} />
               <View style={styles.cardRow}>
                 <FigureCard title="Ankäufe" value={figures.purchases} format="count" compact />
                 <FigureCard title="Verkäufe" value={figures.sales} format="count" compact />
@@ -304,6 +295,12 @@ export default function DashboardScreen() {
                 <FigureCard title="Live gegangen" value={figures.live} format="count" compact />
                 <FigureCard title="Reserviert" value={figures.reserved} format="count" compact />
               </View>
+              <FigureCard title="Netto Umsatz" value={figures.netSales} />
+              <FigureCard title="Rohertrag" value={figures.profit} />
+              <FigureCard title="Rohertragsmarge" value={figures.profitMargin} format="percent" />
+              <FigureCard title="Angekaufwert Artikel" value={figures.purchaseTotalArticles} />
+              <FigureCard title="Ø Verkaufspreis Artikel" value={figures.averageSellingPriceArticles} />
+              <FigureCard title="Servicekosten" value={figures.serviceCost} />
             </View>
           </>
         ) : null}
