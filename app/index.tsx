@@ -14,7 +14,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/auth';
 import Logo from '../assets/circlaris_logo_1F4143.svg';
 
-const LOGIN_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}${process.env.EXPO_PUBLIC_API_PREFIX}/login`;
+const API_PREFIX = process.env.EXPO_PUBLIC_API_PREFIX ?? '/mobile-api';
+
+const API_ENVIRONMENTS = [
+  { label: 'Production', url: 'https://app.circlaris.com' },
+  { label: 'Staging', url: 'https://im.dev.marginscale.com' },
+] as const;
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -23,6 +28,8 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const passwordRef = useRef<TextInput>(null);
+  const [apiEnv, setApiEnv] = useState<(typeof API_ENVIRONMENTS)[number]>(API_ENVIRONMENTS[0]);
+  const [envOpen, setEnvOpen] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -33,8 +40,9 @@ export default function LoginScreen() {
     setError(null);
     setLoading(true);
 
+    const loginUrl = `${apiEnv.url}${API_PREFIX}/login`;
     try {
-      const response = await fetch(LOGIN_URL, {
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -132,6 +140,35 @@ export default function LoginScreen() {
                   <Text style={styles.buttonText}>Sign In</Text>
                 )}
               </Pressable>
+
+              <View style={styles.envWrapper}>
+                <Pressable
+                  style={styles.envSelector}
+                  onPress={() => setEnvOpen((o) => !o)}
+                >
+                  <Text style={styles.envSelectorLabel}>Environment</Text>
+                  <Text style={styles.envSelectorValue}>{apiEnv.label}</Text>
+                  <Text style={styles.envChevron}>{envOpen ? '▲' : '▼'}</Text>
+                </Pressable>
+                {envOpen && (
+                  <View style={styles.envOptions}>
+                    {API_ENVIRONMENTS.map((env) => {
+                      const isActive = env.url === apiEnv.url;
+                      return (
+                        <Pressable
+                          key={env.url}
+                          style={[styles.envOption, isActive && styles.envOptionActive]}
+                          onPress={() => { setApiEnv(env); setEnvOpen(false); }}
+                        >
+                          <Text style={[styles.envOptionText, isActive && styles.envOptionTextActive]}>
+                            {env.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -233,5 +270,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.3,
+  },
+  envWrapper: {
+    marginTop: 4,
+  },
+  envSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: '#F9FAFB',
+    gap: 8,
+  },
+  envSelectorLabel: {
+    fontSize: 13,
+    color: '#6B7280',
+    flex: 1,
+  },
+  envSelectorValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  envChevron: {
+    fontSize: 9,
+    color: '#6B7280',
+  },
+  envOptions: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    marginTop: 4,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+  },
+  envOption: {
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  envOptionActive: {
+    backgroundColor: '#E8EEEE',
+  },
+  envOptionText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  envOptionTextActive: {
+    fontWeight: '600',
+    color: '#1F4143',
   },
 });

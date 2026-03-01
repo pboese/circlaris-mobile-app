@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "circlaris-mobile",
+    "name": "Circlaris",
     "slug": "circlaris-mobile",
     "scheme": "circlaris",
-    "version": "1.0.0",
+    "version": "0.0.5",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/circlaris-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/circlaris-splashscreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -26,7 +26,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.circlaris.mobileapp"
     },
     "web": {
       "favicon": "./assets/favicon.png",

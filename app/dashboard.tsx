@@ -28,6 +28,65 @@ function today(): Date {
   return d;
 }
 
+function daysAgo(n: number): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - n);
+  return d;
+}
+
+interface Preset {
+  label: string;
+  range: () => { start: Date; end: Date };
+}
+
+const PRESETS: Preset[] = [
+  { label: 'Heute', range: () => ({ start: today(), end: today() }) },
+  {
+    label: 'Gestern',
+    range: () => {
+      const d = daysAgo(1);
+      return { start: d, end: d };
+    },
+  },
+  { label: 'Letzte 7 Tage', range: () => ({ start: daysAgo(6), end: today() }) },
+  { label: 'Letzte 30 Tage', range: () => ({ start: daysAgo(29), end: today() }) },
+  { label: 'Letzte 90 Tage', range: () => ({ start: daysAgo(89), end: today() }) },
+  { label: 'Letzte 180 Tage', range: () => ({ start: daysAgo(179), end: today() }) },
+  { label: 'Letzte 365 Tage', range: () => ({ start: daysAgo(364), end: today() }) },
+  { label: 'Aktueller Monat', range: () => ({ start: firstOfMonth(), end: today() }) },
+  {
+    label: 'Letzter Monat',
+    range: () => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      end.setHours(0, 0, 0, 0);
+      return { start, end };
+    },
+  },
+  {
+    label: 'Jahr bis heute',
+    range: () => {
+      const start = new Date(new Date().getFullYear(), 0, 1);
+      start.setHours(0, 0, 0, 0);
+      return { start, end: today() };
+    },
+  },
+  {
+    label: 'Letztes Jahr',
+    range: () => {
+      const year = new Date().getFullYear() - 1;
+      const start = new Date(year, 0, 1);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(year, 11, 31);
+      end.setHours(0, 0, 0, 0);
+      return { start, end };
+    },
+  },
+];
+
 function toApiDate(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -138,9 +197,10 @@ export default function DashboardScreen() {
   const [fetching, setFetching] = useState(true);
   const [loggingOut, setLoggingOut] = React.useState(false);
 
-  const [startDate, setStartDate] = useState<Date>(firstOfMonth);
+  const [startDate, setStartDate] = useState<Date>(() => daysAgo(29));
   const [endDate, setEndDate] = useState<Date>(today);
   const [rangeModalOpen, setRangeModalOpen] = useState(false);
+  const [activePreset, setActivePreset] = useState<string>('Letzte 30 Tage');
   const [picking, setPicking] = useState<{ start: string | null; end: string | null }>({
     start: null,
     end: null,
@@ -166,6 +226,7 @@ export default function DashboardScreen() {
   }
 
   function handleDayPress(day: { dateString: string }) {
+    setActivePreset('');
     const { start, end } = picking;
     if (!start || (start && end)) {
       setPicking({ start: day.dateString, end: null });
@@ -183,6 +244,14 @@ export default function DashboardScreen() {
       setStartDate(new Date(picking.start + 'T00:00:00'));
       setEndDate(new Date(picking.end + 'T00:00:00'));
     }
+    setRangeModalOpen(false);
+  }
+
+  function applyPreset(preset: Preset) {
+    const { start, end } = preset.range();
+    setStartDate(start);
+    setEndDate(end);
+    setActivePreset(preset.label);
     setRangeModalOpen(false);
   }
 
@@ -233,6 +302,26 @@ export default function DashboardScreen() {
                 </Text>
               </Pressable>
             </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.presetScroll}
+            >
+              {PRESETS.map((preset) => {
+                const isActive = activePreset === preset.label;
+                return (
+                  <Pressable
+                    key={preset.label}
+                    style={[styles.presetPill, isActive && styles.presetPillActive]}
+                    onPress={() => applyPreset(preset)}
+                  >
+                    <Text style={[styles.presetPillText, isActive && styles.presetPillTextActive]}>
+                      {preset.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
             {picking.start && !picking.end ? (
               <Text style={styles.modalHint}>Enddatum auswählen</Text>
             ) : !picking.start ? (
@@ -451,6 +540,32 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     paddingTop: 10,
     paddingBottom: 2,
+  },
+  // Preset pills
+  presetScroll: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  presetPill: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    backgroundColor: '#fff',
+  },
+  presetPillActive: {
+    backgroundColor: '#1F4143',
+    borderColor: '#1F4143',
+  },
+  presetPillText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  presetPillTextActive: {
+    color: '#fff',
   },
   // Cards
   cards: {
