@@ -3,7 +3,7 @@
     "name": "Circlaris",
     "slug": "circlaris-mobile",
     "scheme": "circlaris",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "orientation": "portrait",
     "icon": "./assets/circlaris-icon.png",
     "userInterfaceStyle": "light",
@@ -15,6 +15,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.circlaris.mobileapp",
+      "associatedDomains": [
+        "webcredentials:app.circlaris.com",
+        "webcredentials:im.dev.marginscale.com"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
