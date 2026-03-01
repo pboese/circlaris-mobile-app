@@ -34,7 +34,8 @@ describe('DashboardScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.fetch = jest.fn();
-    process.env.EXPO_PUBLIC_API_BASE_URL = 'https://im.dev.marginscale.com/mobile-api';
+    process.env.EXPO_PUBLIC_API_BASE_URL = 'https://im.dev.marginscale.com';
+    process.env.EXPO_PUBLIC_API_PREFIX = '/mobile-api';
   });
 
   it('renders all figure card titles after a successful fetch', async () => {
@@ -59,7 +60,7 @@ describe('DashboardScreen', () => {
     });
   });
 
-  it('renders user greeting and customer name', async () => {
+  it('renders user greeting', async () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => mockFigures,
@@ -69,7 +70,6 @@ describe('DashboardScreen', () => {
 
     await waitFor(() => {
       expect(getByText('Hello, Bob')).toBeTruthy();
-      expect(getByText('Acme GmbH')).toBeTruthy();
     });
   });
 

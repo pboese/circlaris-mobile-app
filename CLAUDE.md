@@ -11,9 +11,9 @@
 | Layer | Technology |
 |---|---|
 | Language | TypeScript 5.9 (strict mode) |
-| Framework | React Native 0.81.5 + React 19.1.0 |
-| Expo SDK | ~54.0.0 |
-| Routing | expo-router ~6.0.23 (file-based) |
+| Framework | React Native 0.83.2 + React 19.2.0 |
+| Expo SDK | ~55.0.0 |
+| Routing | expo-router ~55.0.3 (file-based) |
 | Auth persistence | expo-secure-store |
 | Calendar/date picker | react-native-calendars |
 | SVG support | react-native-svg + react-native-svg-transformer |
@@ -330,7 +330,7 @@ npm run test:coverage # With coverage
 
 ### Jest config (in `package.json`)
 
-- **Preset:** `jest-expo` (must match the installed Expo SDK major version — currently SDK 54 / `jest-expo@54`)
+- **Preset:** `jest-expo` (must match the installed Expo SDK major version — currently SDK 55 / `jest-expo@55`)
 - **SVG mock:** `moduleNameMapper` maps `*.svg` → `__mocks__/svgMock.tsx`
 - **transformIgnorePatterns:** extended to include `react-native-calendars` and `react-native-svg`
 - **Coverage sources:** `app/**` and `context/**`

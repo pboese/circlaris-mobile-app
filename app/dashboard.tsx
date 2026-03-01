@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar } from 'react-native-calendars';
 import { useAuth } from '../context/auth';
 
-const FIGURES_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}/figures`;
+const FIGURES_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}${process.env.EXPO_PUBLIC_API_PREFIX}/figures`;
 
 function firstOfMonth(): Date {
   const d = new Date();

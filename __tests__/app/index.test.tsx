@@ -17,7 +17,8 @@ describe('LoginScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.fetch = jest.fn();
-    process.env.EXPO_PUBLIC_API_BASE_URL = 'https://im.dev.marginscale.com/mobile-api';
+    process.env.EXPO_PUBLIC_API_BASE_URL = 'https://im.dev.marginscale.com';
+    process.env.EXPO_PUBLIC_API_PREFIX = '/mobile-api';
   });
 
   it('renders email input, password input, and sign in button', () => {

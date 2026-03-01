@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/auth';
 import Logo from '../assets/circlaris_logo_1F4143.svg';
 
-const LOGIN_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}/login`;
+const LOGIN_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}${process.env.EXPO_PUBLIC_API_PREFIX}/login`;
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
