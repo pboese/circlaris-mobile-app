@@ -98,6 +98,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
+                  autoComplete="email"
                   textContentType="username"
                   returnKeyType="next"
                   onSubmitEditing={() => passwordRef.current?.focus()}
@@ -115,6 +116,7 @@ export default function LoginScreen() {
                   value={password}
                   onChangeText={(t) => { setPassword(t); setError(null); }}
                   secureTextEntry
+                  autoComplete="current-password"
                   textContentType="password"
                   returnKeyType="done"
                   onSubmitEditing={handleLogin}
