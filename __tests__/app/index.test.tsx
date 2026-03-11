@@ -28,6 +28,18 @@ describe('LoginScreen', () => {
     expect(getByText('Sign In')).toBeTruthy();
   });
 
+  it('email input has textContentType emailAddress for password manager autofill', () => {
+    const { getByPlaceholderText } = render(<LoginScreen />);
+    const emailInput = getByPlaceholderText('you@example.com');
+    expect(emailInput.props.textContentType).toBe('emailAddress');
+  });
+
+  it('password input has textContentType password for password manager autofill', () => {
+    const { getByPlaceholderText } = render(<LoginScreen />);
+    const passwordInput = getByPlaceholderText('••••••••');
+    expect(passwordInput.props.textContentType).toBe('password');
+  });
+
   it('renders welcome heading', () => {
     const { getByText } = render(<LoginScreen />);
     expect(getByText('Welcome back')).toBeTruthy();

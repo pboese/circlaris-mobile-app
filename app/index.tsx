@@ -99,7 +99,7 @@ export default function LoginScreen() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   autoComplete="email"
-                  textContentType="username"
+                  textContentType="emailAddress"
                   returnKeyType="next"
                   onSubmitEditing={() => passwordRef.current?.focus()}
                   editable={!loading}
