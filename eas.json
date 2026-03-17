@@ -5,6 +5,9 @@
   },
   "build": {
     "development": {
+      "ios": {
+        "simulator": true
+      },
       "developmentClient": true,
       "distribution": "internal",
       "env": {
@@ -22,7 +25,7 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://im.dev.marginscale.com",
+        "EXPO_PUBLIC_API_BASE_URL": "https://app.circlaris.com",
         "EXPO_PUBLIC_API_PREFIX": "/mobile-api"
       }
     }

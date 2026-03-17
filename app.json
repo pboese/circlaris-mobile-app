@@ -3,7 +3,7 @@
     "name": "Circlaris",
     "slug": "circlaris-mobile",
     "scheme": "circlaris",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "orientation": "portrait",
     "icon": "./assets/circlaris-icon.png",
     "userInterfaceStyle": "light",
